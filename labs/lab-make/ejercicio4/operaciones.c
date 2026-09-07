@@ -11,3 +11,5 @@ int restar(int a, int b) {
 int multiplicar(int a, int b) {
     return a * b;
 }
+
+// Agrego comentario para probar que compile unicamente el otro archivo.
