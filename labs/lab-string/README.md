@@ -277,7 +277,7 @@ Los tests de `IsEmpty` ya están activos en `StringTest.c`. Corré `make test` y
 
 **P1** — `IsEmpty` podría haberse escrito también como `return s[0] == '\0'`. ¿Son equivalentes? ¿Por qué?
 
-> R:
+> R: Si, son equivalentes porque representa el primer carácter de la cadena y es equivalente a *s.
 
 ---
 
@@ -328,14 +328,14 @@ make test
 
 **P2** — ¿Qué hace `s + 1`? ¿Por qué avanza al siguiente carácter y no al siguiente byte?
 
-> R:
+> R: s + 1 hace que el puntero avance al siguiente elemento del arreglo de char.
 
 **P3** — Si llamaras a `GetLength(NULL)`, ¿qué pasaría? ¿Por qué las precondiciones del contrato dicen `s != NULL`?
 
-> R:
+> R: Si se llamara a GetLength(NULL), al intentar evaluar IsEmpty(s) se terminaría desreferenciando un puntero nulo, lo que produce comportamiento indefinido y normalmente un error de ejecución. Por eso la precondición exige s != NULL: la función solo puede trabajar con un puntero que apunte a una cadena válida.
 
 ```
-GETLENGTH_PASA=
+GETLENGTH_PASA=SI
 ```
 _(escribí SI cuando todos los tests de GetLength pasen)_
 
@@ -367,7 +367,7 @@ El `while` termina cuando alguna de las dos cadenas llega a `'\0'`. Después dev
 
 **P4** — ¿Qué dos casos están mal cubiertos por `return 1`? Describí un ejemplo para cada uno.
 
-> R:
+> R: Ejemplo 1: "hola" y "holanda". El while compara h, o, l y luego la primera cadena llega a '\0'. Como sale del ciclo y hace return 1, diría que son iguales aunque no lo son. Ejemplo 2: "holanda" y "hola". Pasa lo mismo pero al revés: la segunda cadena llega antes a '\0' y la función devuelve 1 incorrectamente.
 
 #### Corrección
 
@@ -384,7 +384,7 @@ make test
 ```
 
 ```
-AREEQUAL_PASA=
+AREEQUAL_PASA=SI
 ```
 _(escribí SI cuando todos los tests de AreEqual pasen)_
 
@@ -414,7 +414,7 @@ int AreDecimalDigits(const char *s) {
 
 **P5** — ¿Por qué la cadena vacía no debería considerarse un conjunto de dígitos decimales? Pensalo desde la especificación matemática.
 
-> R:
+> R:La cadena vacía no debería considerarse un conjunto de dígitos decimales porque no contiene ningún carácter. Según la especificación, para ser válida debe tener al menos un carácter y todos sus caracteres deben estar entre '0' y '9'
 
 #### Corrección
 
@@ -425,7 +425,7 @@ make test
 ```
 
 ```
-AREDECIMALDIGITS_PASA=
+AREDECIMALDIGITS_PASA=SI
 ```
 _(escribí SI cuando todos los tests de AreDecimalDigits pasen)_
 
@@ -452,7 +452,7 @@ make test
 ```
 
 ```
-CONTAINS_PASA=
+CONTAINS_PASA=SI
 ```
 _(escribí SI cuando todos los tests de Contains pasen)_
 
@@ -467,7 +467,7 @@ Antes de implementar, discutí con tu equipo:
 
 **P6** — Conclusión de la discusión:
 
-> R:
+> R:No tiene sentido que ToInteger sea parte de la biblioteca String, porque su objetivo no es operar sobre una cadena sino convertirla a otro tipo de dato. Es correcto que esté en un módulo separado Conversion, ya que así cada módulo tiene una responsabilidad específica.
 
 ---
 
@@ -494,7 +494,7 @@ int ToInteger(const char *s) {
 
 **P7** — El loop acumula correctamente el valor en `resultado`. ¿Qué está mal en el `return`?
 
-> R:
+> R:El return está devolviendo solamente signo, que vale 1 o -1, en lugar del número calculado. Debería devolver resultado * signo para obtener el valor acumulado con el signo correspondiente
 
 #### Corrección
 
@@ -506,10 +506,10 @@ make test
 
 **P8** — La expresión `*s - '0'` convierte un carácter dígito al entero correspondiente. ¿Por qué funciona? ¿Qué devuelve `'3' - '0'`?
 
-> R:
+> R:Funciona porque los caracteres numéricos están ordenados consecutivamente en ASCII. Al restar el carácter '0' se obtiene el valor numérico correspondiente. Por ejemplo, '3' - '0' devuelve 3
 
 ```
-TOINTEGER_PASA=
+TOINTEGER_PASA=SI
 ```
 _(escribí SI cuando todos los tests de ToInteger pasen)_
 
@@ -562,7 +562,7 @@ foo
 
 **P9** — ¿Por qué `(void)argc` suprime un warning? ¿Cuándo sería necesario usar `argc`?
 
-> R:
+> R: (void)argc se usa para indicar explícitamente que argc no se va a utilizar y así evitar el warning de parámetro sin usar. Sería necesario usar argc si quisiéramos saber cuántos argumentos recibió el programa, por ejemplo para validar una cantidad mínima o máxima de argumentos
 
 ---
 
@@ -589,7 +589,7 @@ Salida esperada:
 ```
 
 ```
-LONGITUDES_PASA=
+LONGITUDES_PASA=SI
 ```
 _(SI o NO)_
 
@@ -616,7 +616,7 @@ make mayorlongitud
 ```
 
 ```
-MAYORLONGITUD_PASA=
+MAYORLONGITUD_PASA=SI
 ```
 _(SI o NO)_
 
@@ -635,7 +635,7 @@ make todosiguales
 ```
 
 ```
-TODOSIGUALES_PASA=
+TODOSIGUALES_PASA=SI
 ```
 _(SI o NO)_
 
@@ -652,7 +652,7 @@ make suma
 ```
 
 ```
-SUMA_PASA=
+SUMA_PASA=SI
 ```
 _(SI o NO)_
 
@@ -662,15 +662,15 @@ _(SI o NO)_
 
 **P10** — `GetLength` es recursiva pero en C una llamada recursiva consume un stack frame. Si llamaras `GetLength` con un string de 1.000.000 de caracteres, ¿qué pasaría? ¿Cómo lo resolverías?
 
-> R:
+> R:Con un string de 1.000.000 de caracteres, GetLength haría 1.000.000 de llamadas recursivas y consumiría muchos stack frames, por lo que probablemente produciría un stack overflow. Lo resolvería implementando GetLength de forma iterativa, recorriendo la cadena con un puntero y un contador
 
 **P11** — En la Parte III, todos los programas usan `char **arg` para iterar en vez de un índice entero. ¿Qué ventaja tiene este estilo? ¿Cuándo sería preferible usar el índice?
 
-> R:
+> R:Usar char **arg permite recorrer directamente los argumentos mediante punteros, sin depender de un índice entero. Es útil cuando solo necesitamos avanzar secuencialmente por argv. Usaría un índice cuando necesite conocer la posición del argumento, acceder a elementos específicos o recorrerlos en un orden distinto
 
 **P12** — En C, `"hola"` es un literal de tipo `const char *`. Si intentaras modificar un carácter con `s[0] = 'H'`, el comportamiento es indefinido. ¿Por qué? ¿En qué parte de la memoria viven los literales?
 
-> R:
+> R:El literal "hola" se almacena en memoria estática y normalmente en una zona de solo lectura. Por eso intentar modificarlo con s[0] = 'H' produce comportamiento indefinido. En cambio, si se declara char s[] = "hola", se crea una copia modificable de los caracteres, normalmente en el stack
 
 ---
 
